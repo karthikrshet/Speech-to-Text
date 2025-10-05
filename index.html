@@ -1,71 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Speech to Text</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    body {
-      background: linear-gradient(135deg, #74ABE2, #5563DE);
-      min-height: 100vh;
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      transition: background 0.4s ease;
-      padding: 24px;
-    }
-    .container {
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(15px);
-      padding: 26px;
-      border-radius: 16px;
-      text-align: center;
-      width: min(920px, 100%);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-      animation: fadeIn 0.8s ease-in-out;
-    }
-    h1 { color: #fff; font-size: 34px; margin-bottom: 14px; }
-    p.sub { color: #eef; opacity: .9; margin-bottom: 16px; font-size: 14px; }
-    .row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center; margin-bottom: 12px; }
-    select, button, input[type="text"] {
-      padding: 10px 12px; border: none; border-radius: 8px; font-size: 14px;
-    }
-    select, input[type="text"] { min-width: 200px; }
-    button {
-      color: white; background: #ff7b54; cursor: pointer; transition: transform 0.2s, background 0.3s;
-    }
-    button:hover { background: #ff5722; transform: translateY(-1px); }
-    button.secondary { background: rgba(255,255,255,0.25); color: #fff; }
-    button.secondary:hover { background: rgba(255,255,255,0.35); }
-    button.ghost { background: transparent; border: 2px solid rgba(255,255,255,0.4); }
-    button.ghost:hover { background: rgba(255,255,255,0.18); }
-    .status {
-      margin: 10px 0 6px; font-weight: 600; color: #fff;
-    }
-    .transcript {
-      margin-top: 14px; color: #111; background: rgba(255,255,255,0.9);
-      border-radius: 12px; padding: 14px; text-align: left;
-      min-height: 180px; max-height: 420px; overflow: auto; line-height: 1.6;
-      box-shadow: inset 0 1px 6px rgba(0,0,0,0.08);
-    }
-    .chips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
-    .chip {
-      background: rgba(255,255,255,0.2); color: #fff; border-radius: 999px; padding: 6px 10px; font-size: 12px;
-      border: 1px solid rgba(255,255,255,0.25);
-    }
-    footer { margin-top: 18px; color: #fff; font-size: 14px; text-align: center; }
-    footer strong { color: #ffdd57; transition: color 0.3s; cursor: pointer; }
-    footer strong:hover { color: #fff; }
-    .theme-toggle { margin-top: 14px; color: #fff; cursor: pointer; font-size: 13px; text-decoration: underline; }
-    .warn { color: #ffe08a; font-size: 13px; margin-top: 6px; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    /* Dark mode transcript text contrast */
-    .dark .transcript { color: #f1f1f1; background: rgba(20,20,20,0.85); }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Speech to Text</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Montserrat",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  body{background:linear-gradient(135deg,#74ABE2,#5563DE);min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;transition:background .4s ease;padding:24px}
+  .container{background:rgba(255,255,255,.15);backdrop-filter:blur(15px);padding:26px;border-radius:16px;text-align:center;width:min(960px,100%);box-shadow:0 8px 32px rgba(0,0,0,.2);animation:fadeIn .8s ease}
+  h1{color:#fff;font-size:34px;margin-bottom:10px}
+  p.sub{color:#eef;opacity:.9;margin-bottom:12px;font-size:14px}
+  .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-bottom:12px}
+  select,button{padding:10px 12px;border:none;border-radius:8px;font-size:14px}
+  button{color:#fff;background:#ff7b54;cursor:pointer;transition:transform .2s,background .3s}
+  button:hover{background:#ff5722;transform:translateY(-1px)}
+  button.secondary{background:rgba(255,255,255,.25);color:#fff}
+  button.secondary:hover{background:rgba(255,255,255,.35)}
+  label.chk{display:flex;gap:8px;align-items:center;color:#fff;font-size:13px}
+  .status{margin:8px 0 6px;font-weight:700;color:#fff}
+  .warn{color:#ffe08a;font-size:13px;margin:6px 0}
+  .error{color:#ffd1d1;font-size:13px;margin:6px 0}
+  .transcript{margin-top:12px;color:#111;background:rgba(255,255,255,.92);border-radius:12px;padding:14px;text-align:left;min-height:180px;max-height:440px;overflow:auto;line-height:1.6;box-shadow:inset 0 1px 6px rgba(0,0,0,.08)}
+  .theme-toggle{margin-top:12px;color:#fff;cursor:pointer;font-size:13px;text-decoration:underline}
+  footer{margin-top:16px;color:#fff;font-size:14px;text-align:center}
+  footer strong{color:#ffdd57;cursor:pointer}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+  .dark .transcript{background:rgba(20,20,20,.88);color:#f1f1f1}
+</style>
 </head>
 <body>
   <div class="container">
     <h1>Speech to Text</h1>
-    <p class="sub">Click <b>Start</b>, speak into your microphone, and watch your words appear below.</p>
+    <p class="sub">Click <b>Start</b>, give microphone permission, and speak. Works best on Chrome/Edge (desktop) or Android Chrome.</p>
 
     <div class="row">
       <select id="lang">
@@ -85,166 +51,166 @@
       <button id="startBtn">▶ Start</button>
       <button id="stopBtn" class="secondary">⏹ Stop</button>
 
-      <button id="copyBtn" class="ghost">📋 Copy</button>
-      <button id="downloadBtn" class="ghost">⬇ Download</button>
+      <label class="chk">
+        <input type="checkbox" id="autoRestart" checked />
+        Auto-restart on silence
+      </label>
     </div>
 
     <div id="status" class="status">Idle</div>
-    <div id="supportWarn" class="warn" style="display:none;"></div>
+    <div id="warn" class="warn" style="display:none;"></div>
+    <div id="err" class="error" style="display:none;"></div>
 
-    <div id="transcript" class="transcript" placeholder="Transcript will appear here…"></div>
-
-    <div class="chips">
-      <span class="chip">Live dictation</span>
-      <span class="chip">Multiple languages</span>
-      <span class="chip">Copy & Download</span>
-      <span class="chip">Theme toggle</span>
-    </div>
+    <div id="transcript" class="transcript" aria-live="polite"></div>
 
     <div class="theme-toggle" id="toggleTheme">Switch Theme</div>
   </div>
 
-  <footer>
-    Developed by <strong>Karthik Shet</strong>
-  </footer>
+  <footer>Developed by <strong>Karthik Shet</strong></footer>
 
-  <script>
-    // Theme toggle
-    const themeToggle = document.getElementById("toggleTheme");
-    let darkMode = false;
-    themeToggle.addEventListener("click", () => {
-      darkMode = !darkMode;
-      document.body.classList.toggle("dark", darkMode);
-      document.body.style.background = darkMode
-        ? "linear-gradient(135deg, #1f1f1f, #3a3a3a)"
-        : "linear-gradient(135deg, #74ABE2, #5563DE)";
-    });
+<script>
+  // Theme toggle
+  const themeToggle = document.getElementById("toggleTheme");
+  let dark = false;
+  themeToggle.addEventListener("click", () => {
+    dark = !dark;
+    document.body.classList.toggle("dark", dark);
+    document.body.style.background = dark ? "linear-gradient(135deg,#1f1f1f,#3a3a3a)" : "linear-gradient(135deg,#74ABE2,#5563DE)";
+  });
 
-    // Elements
-    const startBtn = document.getElementById("startBtn");
-    const stopBtn = document.getElementById("stopBtn");
-    const copyBtn = document.getElementById("copyBtn");
-    const downloadBtn = document.getElementById("downloadBtn");
-    const transcriptEl = document.getElementById("transcript");
-    const statusEl = document.getElementById("status");
-    const warnEl = document.getElementById("supportWarn");
-    const langSelect = document.getElementById("lang");
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const startBtn = document.getElementById("startBtn");
+  const stopBtn = document.getElementById("stopBtn");
+  const langSel = document.getElementById("lang");
+  const autoRestartEl = document.getElementById("autoRestart");
+  const statusEl = document.getElementById("status");
+  const warnEl = document.getElementById("warn");
+  const errEl = document.getElementById("err");
+  const out = document.getElementById("transcript");
 
-    // Web Speech API setup
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition = null;
-    let listening = false;
-    let finalText = "";
+  let recognition = null;
+  let listening = false;
+  let finalText = "";
 
-    function setStatus(text) {
-      statusEl.textContent = text;
+  const setStatus = (t) => statusEl.textContent = t;
+  const showWarn = (t) => { warnEl.style.display = "block"; warnEl.textContent = t; };
+  const hideWarn = () => { warnEl.style.display = "none"; warnEl.textContent = ""; };
+  const showErr = (t) => { errEl.style.display = "block"; errEl.textContent = t; };
+  const hideErr = () => { errEl.style.display = "none"; errEl.textContent = ""; };
+
+  // Environment checks
+  (function envChecks() {
+    if (!SR) {
+      showErr("❌ Web Speech Recognition is not supported in this browser. Use Chrome/Edge desktop or Android Chrome.");
+      startBtn.disabled = true;
+      stopBtn.disabled = true;
+      return;
     }
-
-    function ensureSupport() {
-      if (!SR) {
-        warnEl.style.display = "block";
-        warnEl.innerHTML = "⚠️ Your browser doesn’t support the Web Speech API. Try Chrome/Edge on desktop, or Android Chrome.";
-        startBtn.disabled = true;
-        stopBtn.disabled = true;
-        return false;
-      }
-      // HTTPS / localhost note
-      if (location.protocol !== "https:" && location.hostname !== "localhost") {
-        warnEl.style.display = "block";
-        warnEl.innerHTML = "ℹ️ Microphone access requires HTTPS in most browsers. Host this page on https:// (GitHub Pages is perfect).";
-      }
-      return true;
+    if (location.protocol !== "https:" && location.hostname !== "localhost") {
+      showWarn("ℹ️ Microphone access may be blocked on HTTP. Host on HTTPS (GitHub Pages is perfect).");
     }
+    // Iframe permission hint
+    try {
+      if (window.top !== window.self) {
+        showWarn("ℹ️ This page is inside an iframe. Ensure the iframe has: allow='microphone' (and avoid strict sandbox).");
+      }
+    } catch(_) {}
+  })();
 
-    function initRecognition() {
-      if (!ensureSupport()) return null;
-      const rec = new SR();
-      rec.lang = langSelect.value || "en-US";
-      rec.interimResults = true;   // show words as they are recognized
-      rec.continuous = true;       // keep listening until we call stop()
+  function initRecognition() {
+    recognition = new SR();
+    recognition.lang = langSel.value || "en-US";
+    recognition.interimResults = true;
+    recognition.continuous = true; // keep going until we call stop()
 
-      rec.onstart = () => {
-        listening = true;
-        setStatus("🎙️ Listening…");
-      };
-      rec.onerror = (e) => {
-        setStatus("⚠️ Error: " + (e.error || "unknown"));
-        listening = false;
-      };
-      rec.onend = () => {
-        listening = false;
-        setStatus("Idle");
-      };
-      rec.onresult = (event) => {
-        let interim = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const chunk = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalText += (finalText ? " " : "") + chunk;
-          } else {
-            interim += chunk;
-          }
+    recognition.onstart = () => {
+      listening = true;
+      hideErr();
+      setStatus("🎙️ Listening… (speak now)");
+    };
+
+    recognition.onresult = (event) => {
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const txt = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalText += (finalText ? " " : "") + txt;
+        } else {
+          interim += txt;
         }
-        // Render final + interim (interim dimmed)
-        transcriptEl.innerHTML = "";
-        const finalP = document.createElement("p");
-        finalP.textContent = finalText;
-        transcriptEl.appendChild(finalP);
-
-        if (interim) {
-          const it = document.createElement("p");
-          it.style.opacity = "0.6";
-          it.style.fontStyle = "italic";
-          it.textContent = interim;
-          transcriptEl.appendChild(it);
-        }
-        transcriptEl.scrollTop = transcriptEl.scrollHeight;
-      };
-
-      return rec;
-    }
-
-    // Controls
-    startBtn.addEventListener("click", () => {
-      if (listening) return;
-      finalText = ""; // reset if you want clean transcript each time
-      transcriptEl.textContent = "";
-      if (!recognition) recognition = initRecognition();
-      if (!recognition) return;
-      recognition.lang = langSelect.value || "en-US";
-      try { recognition.start(); } catch(_) {}
-    });
-
-    stopBtn.addEventListener("click", () => {
-      if (!recognition) return;
-      try { recognition.stop(); } catch(_) {}
-    });
-
-    copyBtn.addEventListener("click", async () => {
-      const textToCopy = transcriptEl.innerText.trim();
-      if (!textToCopy) return;
-      try {
-        await navigator.clipboard.writeText(textToCopy);
-        setStatus("✅ Copied to clipboard");
-        setTimeout(()=>setStatus(listening ? "🎙️ Listening…" : "Idle"), 1200);
-      } catch {
-        setStatus("⚠️ Copy failed");
       }
-    });
+      renderTranscript(finalText, interim);
+    };
 
-    downloadBtn.addEventListener("click", () => {
-      const text = transcriptEl.innerText.trim();
-      if (!text) return;
-      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = `transcript_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.txt`;
-      document.body.appendChild(a); a.click(); a.remove();
-      URL.revokeObjectURL(url);
-    });
+    recognition.onerror = (e) => {
+      listening = false;
+      console.warn("[STT error]", e);
+      let msg = "Error: " + (e.error || "unknown");
+      if (e.error === "not-allowed") msg += " — Mic permission denied. Allow mic in browser site settings.";
+      if (e.error === "aborted") msg += " — Start was interrupted. Click Start again.";
+      if (e.error === "no-speech") msg += " — No speech detected. Try again.";
+      showErr(msg);
+      setStatus("⚠️ " + msg);
+    };
 
-    // Initialize support message on load
-    ensureSupport();
-  </script>
+    recognition.onend = () => {
+      listening = false;
+      setStatus("Idle");
+      if (autoRestartEl.checked) {
+        // Give browser a brief breather; then restart if user didn't press Stop
+        setTimeout(() => {
+          if (!listening) safeStart();
+        }, 400);
+      }
+    };
+  }
+
+  function renderTranscript(finalTxt, interimTxt) {
+    out.innerHTML = "";
+    if (finalTxt) {
+      const p = document.createElement("p");
+      p.textContent = finalTxt;
+      out.appendChild(p);
+    }
+    if (interimTxt) {
+      const it = document.createElement("p");
+      it.style.opacity = "0.6";
+      it.style.fontStyle = "italic";
+      it.textContent = interimTxt;
+      out.appendChild(it);
+    }
+    out.scrollTop = out.scrollHeight;
+  }
+
+  function safeStart() {
+    try {
+      if (!recognition) initRecognition();
+      recognition.lang = langSel.value || "en-US";
+      recognition.start(); // must be triggered by user gesture first time
+    } catch (err) {
+      // Chrome throws if start() is called while it's already starting; ignore
+      if (String(err).includes("start")) return;
+      showErr("Start failed: " + err.message);
+    }
+  }
+
+  startBtn.addEventListener("click", () => {
+    hideErr();
+    finalText = "";
+    renderTranscript("", "");
+    safeStart();
+  });
+
+  stopBtn.addEventListener("click", () => {
+    autoRestartEl.checked = false;
+    if (!recognition) return;
+    try { recognition.stop(); } catch(_) {}
+  });
+
+  // Change language while idle
+  langSel.addEventListener("change", () => {
+    if (recognition && !listening) recognition.lang = langSel.value;
+  });
+</script>
 </body>
 </html>
